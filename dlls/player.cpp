@@ -3114,6 +3114,11 @@ void CBasePlayer::Spawn()
 	m_afPhysicsFlags = 0;
 	m_fLongJump = false; // no longjump module.
 
+	if (HasSuit() == 0)
+	{
+		SetHasSuit(true);
+	}
+
 	g_engfuncs.pfnSetPhysicsKeyValue(edict(), "slj", "0");
 	g_engfuncs.pfnSetPhysicsKeyValue(edict(), "hl", "1");
 	g_engfuncs.pfnSetPhysicsKeyValue(edict(), "bj", UTIL_dtos1(sv_allowbunnyhopping.value != 0 ? 1 : 0));
