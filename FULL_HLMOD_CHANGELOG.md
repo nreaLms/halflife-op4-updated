@@ -5,4 +5,5 @@
 ===========================================
 == Player =================================
 
+* Add cl_righthand cvar
 * Add hev on player spawn

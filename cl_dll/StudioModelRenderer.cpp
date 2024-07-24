@@ -558,6 +558,13 @@ void CStudioModelRenderer::StudioSetUpTransform(bool trivial_accept)
 	(*m_protationmatrix)[0][3] = modelpos[0];
 	(*m_protationmatrix)[1][3] = modelpos[1];
 	(*m_protationmatrix)[2][3] = modelpos[2];
+
+	if (CVAR_GET_FLOAT("cl_righthand") == 1 && m_pCurrentEntity == gEngfuncs.GetViewModel())
+	{
+		(*m_protationmatrix)[0][1] *= -1;
+		(*m_protationmatrix)[1][1] *= -1;
+		(*m_protationmatrix)[2][1] *= -1;
+	}
 }
 
 
