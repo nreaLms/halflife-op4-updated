@@ -5,5 +5,6 @@
 ===========================================
 == Player =================================
 
+* Add custom bob
 * Add cl_righthand cvar
 * Add hev on player spawn
