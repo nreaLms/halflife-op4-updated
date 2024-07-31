@@ -5,6 +5,7 @@
 ===========================================
 == Player =================================
 
+* Add hev weaponstrip
 * Add custom bob
 * Add cl_righthand cvar
 * Add hev on player spawn

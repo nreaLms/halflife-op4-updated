@@ -5566,7 +5566,7 @@ void CStripWeapons::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE 
 	}
 
 	if (pPlayer)
-		pPlayer->RemoveAllItems(false);
+		pPlayer->RemoveAllItems(true);
 }
 
 
