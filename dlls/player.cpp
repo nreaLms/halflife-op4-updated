@@ -578,6 +578,11 @@ bool CBasePlayer::TakeDamage(entvars_t* pevInflictor, entvars_t* pevAttacker, fl
 
 	pev->punchangle.x = -2;
 
+	if (IsAlive() != 0)
+	{
+		UTIL_ScreenFadeAll(Vector(150, 0, 0), 0.25, 0, 50, FFADE_IN);
+	}
+
 	if (fTookDamage && !ftrivial && fmajor && flHealthPrev >= 75)
 	{
 		// first time we take major damage...
@@ -889,12 +894,22 @@ void CBasePlayer::Killed(entvars_t* pevAttacker, int iGib)
 	// UNDONE: Put this in, but add FFADE_PERMANENT and make fade time 8.8 instead of 4.12
 	// UTIL_ScreenFade( edict(), Vector(128,0,0), 6, 15, 255, FFADE_OUT | FFADE_MODULATE );
 
-	if ((pev->health < -40 && iGib != GIB_NEVER) || iGib == GIB_ALWAYS)
+	if (pev->health <= 0)
 	{
-		pev->solid = SOLID_NOT;
-		GibMonster(); // This clears pev->model
-		pev->effects |= EF_NODRAW;
-		return;
+		{
+			if ((pev->health < -40 && iGib != GIB_NEVER) || iGib == GIB_ALWAYS)
+			{
+				pev->solid = SOLID_NOT;
+				GibMonster(); // This clears pev->model
+				pev->effects |= EF_NODRAW;
+			}
+		}
+		UTIL_ScreenFadeAll(Vector(150, 0, 0), 1, 0, 200, FFADE_IN);
+		SetHasSuit(false);
+	}
+	else
+	{
+		SetHasSuit(true);
 	}
 
 	DeathSound();

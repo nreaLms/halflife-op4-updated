@@ -31,6 +31,7 @@
 #include "gamerules.h"
 #include "game.h"
 #include "UserMessages.h"
+#include <shake.h>
 
 #define NOT_USED 255
 
@@ -599,6 +600,7 @@ void CBasePlayerItem::DefaultTouch(CBaseEntity* pOther)
 	{
 		AttachToPlayer(pPlayer);
 		EMIT_SOUND(ENT(pPlayer->pev), CHAN_ITEM, "items/gunpickup2.wav", 1, ATTN_NORM);
+		UTIL_ScreenFadeAll(Vector(150, 150, 0), 0.50, 0, 50, FFADE_IN);
 	}
 
 	SUB_UseTargets(pOther, USE_TOGGLE, 0); // UNDONE: when should this happen?
