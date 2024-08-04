@@ -58,6 +58,7 @@ static int tracerCount[MAX_PLAYERS];
 #include "pm_shared.h"
 
 void V_PunchAxis(int axis, float punch);
+void Punch(float p, float y, float r);
 void VectorAngles(const float* forward, float* angles);
 
 extern cvar_t* cl_lw;
@@ -494,7 +495,8 @@ void EV_FireGlock1(event_args_t* args)
 		EV_MuzzleFlash();
 		gEngfuncs.pEventAPI->EV_WeaponAnimation(empty ? GLOCK_SHOOT_EMPTY : GLOCK_SHOOT, 0);
 
-		V_PunchAxis(0, -2.0);
+		// V_PunchAxis(0, -2.0);
+		Punch(2.0, gEngfuncs.pfnRandomFloat(-2.0, 2.0), 0.0);
 	}
 
 	EV_GetDefaultShellInfo(args, origin, velocity, ShellVelocity, ShellOrigin, forward, right, up, 20, -12, 4);
@@ -540,7 +542,8 @@ void EV_FireGlock2(event_args_t* args)
 		EV_MuzzleFlash();
 		gEngfuncs.pEventAPI->EV_WeaponAnimation(empty ? GLOCK_SHOOT_EMPTY : GLOCK_SHOOT, 0);
 
-		V_PunchAxis(0, -2.0);
+		// V_PunchAxis(0, -2.0);
+		Punch(2.0, gEngfuncs.pfnRandomFloat(-2.0, 2.0), 0.0);
 	}
 
 	EV_GetDefaultShellInfo(args, origin, velocity, ShellVelocity, ShellOrigin, forward, right, up, 20, -12, 4);
@@ -590,7 +593,9 @@ void EV_FireShotGunDouble(event_args_t* args)
 		// Add muzzle flash to current weapon model
 		EV_MuzzleFlash();
 		gEngfuncs.pEventAPI->EV_WeaponAnimation(SHOTGUN_FIRE2, 0);
-		V_PunchAxis(0, -10.0);
+
+		// V_PunchAxis(0, -10.0);
+		Punch(10.0, gEngfuncs.pfnRandomFloat(-2.0, 2.0), 0.0);
 	}
 
 	for (j = 0; j < 2; j++)
@@ -643,7 +648,8 @@ void EV_FireShotGunSingle(event_args_t* args)
 		EV_MuzzleFlash();
 		gEngfuncs.pEventAPI->EV_WeaponAnimation(SHOTGUN_FIRE, 0);
 
-		V_PunchAxis(0, -5.0);
+		// V_PunchAxis(0, -5.0);
+		Punch(5.0, gEngfuncs.pfnRandomFloat(-2.0, 2.0), 0.0);
 	}
 
 	EV_GetDefaultShellInfo(args, origin, velocity, ShellVelocity, ShellOrigin, forward, right, up, 32, -12, 6);
@@ -699,7 +705,8 @@ void EV_FireMP5(event_args_t* args)
 		EV_MuzzleFlash();
 		gEngfuncs.pEventAPI->EV_WeaponAnimation(MP5_FIRE1 + gEngfuncs.pfnRandomLong(0, 2), 0);
 
-		V_PunchAxis(0, gEngfuncs.pfnRandomFloat(-2, 2));
+		// V_PunchAxis(0, gEngfuncs.pfnRandomFloat(-2, 2));
+		Punch(2.0, gEngfuncs.pfnRandomFloat(-2.0, 2.0), 0.0);
 	}
 
 	EV_GetDefaultShellInfo(args, origin, velocity, ShellVelocity, ShellOrigin, forward, right, up, 20, -12, 4);
@@ -735,7 +742,9 @@ void EV_FireMP52(event_args_t* args)
 	if (EV_IsLocal(idx))
 	{
 		gEngfuncs.pEventAPI->EV_WeaponAnimation(MP5_LAUNCH, 0);
-		V_PunchAxis(0, -10);
+
+		// V_PunchAxis(0, -10);
+		Punch(10.0, gEngfuncs.pfnRandomFloat(-2.0, 2.0), 0.0);
 	}
 
 	switch (gEngfuncs.pfnRandomLong(0, 1))
@@ -784,7 +793,8 @@ void EV_FirePython(event_args_t* args)
 		EV_MuzzleFlash();
 		gEngfuncs.pEventAPI->EV_WeaponAnimation(PYTHON_FIRE1, body);
 
-		V_PunchAxis(0, -10.0);
+		// V_PunchAxis(0, -10.0);
+		Punch(10.0, gEngfuncs.pfnRandomFloat(-2.0, 2.0), 0.0);
 
 		SetLocalBody(WEAPON_PYTHON, body);
 	}
@@ -894,7 +904,9 @@ void EV_FireGauss(event_args_t* args)
 
 	if (EV_IsLocal(idx))
 	{
-		V_PunchAxis(0, -2.0);
+		// V_PunchAxis(0, -2.0);
+		Punch(2.0, gEngfuncs.pfnRandomFloat(-2.0, 2.0), 0.0);
+
 		gEngfuncs.pEventAPI->EV_WeaponAnimation(GAUSS_FIRE2, 0);
 
 		if (!m_fPrimaryFire)
@@ -1280,7 +1292,8 @@ void EV_FireCrossbow(event_args_t* args)
 		else
 			gEngfuncs.pEventAPI->EV_WeaponAnimation(CROSSBOW_FIRE3, 0);
 
-		V_PunchAxis(0, -2.0);
+		// V_PunchAxis(0, -2.0);
+		Punch(2.0, gEngfuncs.pfnRandomFloat(-2.0, 2.0), 0.0);
 	}
 }
 //======================
@@ -1306,7 +1319,8 @@ void EV_FireRpg(event_args_t* args)
 	{
 		gEngfuncs.pEventAPI->EV_WeaponAnimation(RPG_FIRE2, 0);
 
-		V_PunchAxis(0, -5.0);
+		// V_PunchAxis(0, -5.0);
+		Punch(5.0, gEngfuncs.pfnRandomFloat(-2.0, 2.0), 0.0);
 	}
 }
 //======================
@@ -1510,7 +1524,9 @@ void EV_HornetGunFire(event_args_t* args)
 	//Only play the weapon anims if I shot it.
 	if (EV_IsLocal(idx))
 	{
-		V_PunchAxis(0, gEngfuncs.pfnRandomLong(0, 2));
+		// V_PunchAxis(0, gEngfuncs.pfnRandomLong(0, 2));
+		Punch(2.0, gEngfuncs.pfnRandomFloat(-2.0, 2.0), 0.0);
+
 		gEngfuncs.pEventAPI->EV_WeaponAnimation(HGUN_SHOOT, 0);
 	}
 
@@ -1628,7 +1644,9 @@ void EV_FireEagle(event_args_t* args)
 		EV_MuzzleFlash();
 
 		gEngfuncs.pEventAPI->EV_WeaponAnimation(bEmpty ? EAGLE_SHOOT_EMPTY : EAGLE_SHOOT, 0);
-		V_PunchAxis(0, -4.0);
+
+		// V_PunchAxis(0, -4.0);
+		Punch(4.0, gEngfuncs.pfnRandomFloat(-2.0, 2.0), 0.0);
 	}
 
 	Vector ShellVelocity;
@@ -1767,8 +1785,10 @@ void EV_FireM249(event_args_t* args)
 		SetLocalBody(WEAPON_M249, iBody);
 		EV_MuzzleFlash();
 		gEngfuncs.pEventAPI->EV_WeaponAnimation(gEngfuncs.pfnRandomLong(0, 2) + M249_SHOOT1, iBody);
-		V_PunchAxis(0, gEngfuncs.pfnRandomFloat(-2, 2));
-		V_PunchAxis(1, gEngfuncs.pfnRandomFloat(-1, 1));
+		
+		// V_PunchAxis(0, gEngfuncs.pfnRandomFloat(-2, 2));
+		// V_PunchAxis(1, gEngfuncs.pfnRandomFloat(-1, 1));
+		Punch(2.0, gEngfuncs.pfnRandomFloat(-2.0, 2.0), 0.0);
 	}
 
 	Vector ShellVelocity;
@@ -1863,7 +1883,9 @@ void EV_FireDisplacer(event_args_t* args)
 		if (EV_IsLocal(args->entindex))
 		{
 			gEngfuncs.pEventAPI->EV_WeaponAnimation(DISPLACER_FIRE, 0);
-			V_PunchAxis(0, -2);
+
+			// V_PunchAxis(0, -2);
+			Punch(2.0, gEngfuncs.pfnRandomFloat(-2.0, 2.0), 0.0);
 		}
 
 		break;
@@ -1904,7 +1926,8 @@ void EV_FireSpore(event_args_t* args)
 	{
 		gEngfuncs.pEventAPI->EV_WeaponAnimation(SPLAUNCHER_FIRE, 0);
 
-		V_PunchAxis(0, -3.0);
+		// V_PunchAxis(0, -3.0);
+		Punch(3.0, gEngfuncs.pfnRandomFloat(-2.0, 2.0), 0.0);
 
 		if (cl_entity_t* pViewModel = gEngfuncs.GetViewModel())
 		{
@@ -1938,7 +1961,9 @@ void EV_SniperRifle(event_args_t* args)
 	{
 		EV_MuzzleFlash();
 		gEngfuncs.pEventAPI->EV_WeaponAnimation(iClip <= 0 ? SNIPERRIFLE_FIRELASTROUND : SNIPERRIFLE_FIRE, 0);
-		V_PunchAxis(0, -2.0);
+		
+		// V_PunchAxis(0, -2.0);
+		Punch(2.0, gEngfuncs.pfnRandomFloat(-2.0, 2.0), 0.0);
 	}
 
 	gEngfuncs.pEventAPI->EV_PlaySound(idx, vecOrigin,

@@ -38,6 +38,8 @@ extern float vJumpAngles[3];
 
 
 void V_DropPunchAngle(float frametime, float* ev_punchangle);
+void NewPunch(float* ev_punchangle, float frametime);
+
 void VectorAngles(const float* forward, float* angles);
 
 #include "r_studioint.h"
@@ -718,6 +720,7 @@ void V_CalcNormalRefdef(struct ref_params_s* pparams)
 	VectorAdd(pparams->viewangles, (float*)&ev_punchangle, pparams->viewangles);
 
 	V_DropPunchAngle(pparams->frametime, (float*)&ev_punchangle);
+	NewPunch((float*)&ev_punchangle, pparams->frametime);
 
 	// smooth out stair step ups
 #if 1
@@ -1706,6 +1709,56 @@ Client side punch effect
 void V_PunchAxis(int axis, float punch)
 {
 	ev_punchangle[axis] = punch;
+}
+
+/*
+=============
+PLut Client Punch From HL2
+=============
+*/
+
+#define PUNCH_DAMPING 5.0f			// bigger number makes the response more damped, smaller is less damped
+#define PUNCH_SPRING_CONSTANT 50.0f // bigger number increases the speed at which the view corrects
+#define clamp(val, min, max) (((val) > (max)) ? (max) : (((val) < (min)) ? (min) : (val)))
+
+Vector punch;
+
+void NewPunch(float* ev_punchangle, float frametime)
+{
+	float damping;
+	float springForceMagnitude;
+
+	if (Length(ev_punchangle) > 0.001 || Length(punch) > 0.001)
+	{
+		VectorMA(ev_punchangle, frametime, punch, ev_punchangle);
+
+		damping = 1 - (PUNCH_DAMPING * frametime);
+
+		if (damping < 0)
+		{
+			damping = 0;
+		}
+		VectorScale(punch, damping, punch);
+
+		// torsional spring
+		// UNDONE: Per-axis spring constant?
+		springForceMagnitude = PUNCH_SPRING_CONSTANT * frametime;
+		springForceMagnitude = clamp(springForceMagnitude, 0, 2);
+
+		VectorMA(punch, -springForceMagnitude, ev_punchangle, punch);
+
+		// don't wrap around
+		ev_punchangle[0] = clamp(ev_punchangle[0], -16, 16);
+		ev_punchangle[1] = clamp(ev_punchangle[1], -179, 179);
+		ev_punchangle[2] = clamp(ev_punchangle[2], -16, 16);
+	}
+}
+
+void Punch(float p, float y, float r)
+{
+	punch[0] -= p * 10;
+	punch[1] += y * 10;
+	punch[2] += r * 10;
 }
 
 /*
