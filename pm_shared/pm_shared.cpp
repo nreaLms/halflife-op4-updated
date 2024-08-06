@@ -1121,6 +1121,10 @@ PM_WalkMove
 Only used by players.  Moves along the ground when player is a MOVETYPE_WALK.
 ======================
 */
+
+#define SPRINTING_SPEED_FACTOR 110.0
+#define SPRINTING_SPEED_FACTOR_LATERAL 55.0
+
 void PM_WalkMove()
 {
 	int clip;
@@ -1140,6 +1144,18 @@ void PM_WalkMove()
 
 	pmtrace_t trace;
 
+	bool bIsSprinting;
+	if (pmove->cmd.buttons & IN_ALT1)
+	{
+		pmove->oldbuttons |= IN_ALT1;
+		bIsSprinting = true;
+	}
+	else
+	{
+		pmove->oldbuttons &= ~IN_ALT1;
+		bIsSprinting = false;
+	}
+
 	// Copy movement amounts
 	fmove = pmove->cmd.forwardmove;
 	smove = pmove->cmd.sidemove;
@@ -1151,8 +1167,13 @@ void PM_WalkMove()
 	VectorNormalize(pmove->forward); // Normalize remainder of vectors.
 	VectorNormalize(pmove->right);	 //
 
-	for (i = 0; i < 2; i++) // Determine x and y parts of velocity
-		wishvel[i] = pmove->forward[i] * fmove + pmove->right[i] * smove;
+    for (i = 0; i < 2; i++)
+	{
+		if (bIsSprinting && (!(pmove->flags & FL_DUCKING)))
+			wishvel[i] = pmove->forward[i] * (fmove * SPRINTING_SPEED_FACTOR) + pmove->right[i] * (smove * SPRINTING_SPEED_FACTOR_LATERAL);
+		else
+			wishvel[i] = pmove->forward[i] * fmove + pmove->right[i] * smove;
+	}
 
 	wishvel[2] = 0; // Zero out z part of velocity
 
@@ -1162,10 +1183,21 @@ void PM_WalkMove()
 	//
 	// Clamp to server defined max speed
 	//
-	if (wishspeed > pmove->maxspeed)
+	if (bIsSprinting && (!(pmove->flags & FL_DUCKING)))
 	{
-		VectorScale(wishvel, pmove->maxspeed / wishspeed, wishvel);
-		wishspeed = pmove->maxspeed;
+		if (wishspeed > pmove->maxspeed + SPRINTING_SPEED_FACTOR)
+		{
+			VectorScale(wishvel, (pmove->maxspeed + SPRINTING_SPEED_FACTOR) / wishspeed, wishvel);
+			wishspeed = pmove->maxspeed + SPRINTING_SPEED_FACTOR;
+		}
+	}
+	else
+	{
+		if (wishspeed > pmove->maxspeed)
+		{
+			VectorScale(wishvel, pmove->maxspeed / wishspeed, wishvel);
+			wishspeed = pmove->maxspeed;
+		}
 	}
 
 	// Set pmove velocity
