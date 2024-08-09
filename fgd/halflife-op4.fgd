@@ -1282,6 +1282,7 @@
     1: "Don't move" : 0
     32: "Toggle" : 0
     64: "Sparks" : 0
+	128: "Transition" : 0
     256:"Touch Activates": 0
   ]
   locked_sound(choices) : "Locked Sound" : 0 = 

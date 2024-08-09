@@ -25,12 +25,14 @@
 #include "cbase.h"
 #include "saverestore.h"
 #include "doors.h"
+#include <shake.h>
 
 #define SF_BUTTON_DONTMOVE 1
 #define SF_ROTBUTTON_NOTSOLID 1
 #define SF_BUTTON_TOGGLE 32		  // button stays pushed until reactivated
 #define SF_BUTTON_SPARK_IF_OFF 64 // button sparks in OFF state
 #define SF_BUTTON_TOUCH_ONLY 256  // button only fires as a result of USE key.
+#define SF_BUTTON_TRANSITION 128
 
 #define SF_GLOBAL_SET 1 // Set global state to initial state on spawn
 
@@ -763,16 +765,28 @@ void CBaseButton::ButtonActivate()
 {
 	EMIT_SOUND(ENT(pev), CHAN_VOICE, (char*)STRING(pev->noise), 1, ATTN_NORM);
 
-	if (!UTIL_IsMasterTriggered(m_sMaster, m_hActivator))
+	if (!UTIL_IsMasterTriggered(m_sMaster, m_hActivator) && (!FBitSet(pev->spawnflags, SF_BUTTON_TRANSITION)))
 	{
 		// button is locked, play locked sound
 		PlayLockSounds(pev, &m_ls, true, true);
 		return;
 	}
-	else
+	else if (FBitSet(pev->spawnflags, SF_BUTTON_TRANSITION))
 	{
 		// button is unlocked, play unlocked sound
 		PlayLockSounds(pev, &m_ls, false, true);
+
+		// teleport player using "doors"
+		CBaseEntity* pDestination;
+		pDestination = UTIL_FindEntityByTargetname(nullptr, STRING(pev->target));	// find entity matching targetname to spawn to it (ideally info_teleport_destination)
+		Vector vecNewOrigin = pDestination->pev->origin;							// define where the teleportee should end up (origin of targetname entity ideally)
+		UTIL_SetOrigin(m_hActivator->pev, vecNewOrigin);							// player is now teleporting to the targetname entity origin
+		m_hActivator->pev->angles = pDestination->pev->angles;						// copy targetname entity angles for 3rd person
+		m_hActivator->pev->v_angle = pDestination->pev->angles;						// copy targetname entity angles for 1st person
+		m_hActivator->pev->fixangle = 1;											// force targetname entity view angles
+
+		// effects
+		UTIL_ScreenFadeAll(Vector(0, 0, 0), 0.25, 0.75, 255, FFADE_IN);				// fading out the screen
 	}
 
 	ASSERT(m_toggle_state == TS_AT_BOTTOM);
